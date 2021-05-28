@@ -1,0 +1,129 @@
+/* divider */
+
+.divider {
+    height: 20px;
+}
+
+/* primary-container */
+
+.primary-container {
+    max-width: 800px;
+    margin: auto;
+}
+
+/* website title */
+
+.website-title-section {
+    text-align: center;
+}
+
+.website-title-section p {
+    font: bold 30px 'Roboto',sans-serif;
+}
+
+/* item textbox and button */
+
+.item-textbox-button {
+    display: flex;
+    align-items: stretch;
+    height: 40px;
+}
+
+.item-textbox {
+    width: 86%;
+    border: solid 1px #29912c;
+    border-radius: 6px 0 0 6px;
+}
+
+.add-item-button {
+    width: 14%;
+    background-color:#ffffff;
+    border: solid 1px #29912c;
+    border-radius: 0 6px 6px 0;
+    font: 16px 'Roboto',sans-serif;
+    color: #29912c;
+}
+
+.item-textbox:focus {
+    outline:none;
+    box-shadow: 0 0 7px #2d9ed6;
+}
+
+.add-item-button:focus {
+    outline: none;
+    box-shadow: 0 0 7px #2d9ed6;
+}
+
+.add-item-button:hover {
+    background-color: #29912c;
+    color: #000000;
+    cursor: pointer;
+}
+
+/* todo items */
+
+.todo-items-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.todo-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.text-value{
+    font: 20px 'Roboto',sans-serif;
+}
+
+.cross-icon {
+    color:#f20020;
+    padding: 0 7px 0 0;
+}
+
+.edit-icon {
+    color: #0a8cf0;
+}
+
+.tick-icon {
+    color: #0af00a;
+    padding: 0 7px 0 0;
+}
+
+.tick-icon-color-changer {
+    color:#000000;
+}
+
+.ontick-text-linethrough {
+    text-decoration: line-through;
+}
+
+.all-icons {
+    font-size: 20px;
+}
+
+/* clear all todo items */
+
+.clear-all-todo-items {
+    text-align: center;
+}
+
+.clear-all-button {
+    background-color: #ffffff;
+    border-radius: 7px;
+    height: 40px;
+    font: 16px 'Roboto',sans-serif;
+    color: #29912c;
+    border: solid 1px #29912c;
+}
+
+.clear-all-button:active {
+    outline: none;
+    box-shadow: 0 0 7px #2d9ed6;
+}
+
+.clear-all-button:hover {
+    background-color: #29912c;
+    color: #000000;
+    cursor: pointer;
+}
