@@ -105,6 +105,10 @@ document.querySelector('.clear-all-button').addEventListener(
     'click',
     ()=>{
         document.querySelector('.todo-items-list').innerHTML='';
-        counterUpdate(0,0);
+        
+        //updating counter after clearing
+        numOfCompletedItems=0;
+        numOfIncompleteItems=0;
+        counterUpdate(numOfCompletedItems, numOfIncompleteItems);
     }
 );
