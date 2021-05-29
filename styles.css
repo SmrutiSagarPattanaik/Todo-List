@@ -60,6 +60,14 @@
     cursor: pointer;
 }
 
+/* counter section */
+
+.counter-section {
+    text-align: center;
+    font: bold 14px 'Roboto',sans-serif;
+    color: #00b4cc;
+}
+
 /* todo items */
 
 .todo-items-list {
@@ -78,16 +86,31 @@
 
 .cross-icon {
     color:#f20020;
-    padding: 0 7px 0 0;
+    margin: 0 7px 0 0;
+}
+
+.cross-icon:hover {
+    cursor: pointer;
+    font-weight: bold;
 }
 
 .edit-icon {
     color: #0a8cf0;
 }
 
+.edit-icon:hover {
+    cursor: pointer;
+    font-weight: bold;
+}
+
 .tick-icon {
     color: #0af00a;
-    padding: 0 7px 0 0;
+    margin: 0 7px 0 0;
+}
+
+.tick-icon:hover {
+    cursor: pointer;
+    font-weight: bold;
 }
 
 .tick-icon-color-changer {
