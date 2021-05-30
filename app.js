@@ -3,10 +3,16 @@ let numOfIncompleteItems = 0;
 
 //counter updation 
 function counterUpdate(compCount, incompCount){
-    if(incompCount < 0)
+    if(incompCount < 0){
         incompCount=0;
-    if(compCount < 0)
+        numOfIncompleteItems=0;
+    }
+        
+    if(compCount < 0){
         compCount=0;
+        numOfCompletedItems=0;
+    }
+        
     document.querySelector('.completed-items-count').innerHTML = `Number of completed items: ${compCount}`;
     document.querySelector('.incomplete-items-count').innerHTML = `Number of incomplete items: ${incompCount}`;
 }
@@ -18,8 +24,12 @@ document.querySelector('.add-item-button').addEventListener(
         event.preventDefault();
         let itemValue = document.querySelector('.item-textbox').value;
 
+        //Error handling when empty todo value is added
         if(itemValue===''){
-            alert('Please enter a valid todo item');
+            document.querySelector('.error-message-content').style.display = 'flex';
+            setTimeout(()=>{
+                document.querySelector('.error-message-content').style.display = 'none';
+            },3000);
             return;
         }
 
@@ -31,16 +41,16 @@ document.querySelector('.add-item-button').addEventListener(
         textValue.appendChild(document.createTextNode(`${itemValue}`));
 
         let crossIcon = document.createElement('i');
-        crossIcon.classList.add('cross-icon','far','fa-times-circle');
+        crossIcon.classList.add('far','fa-times-circle');
 
         let tickIcon = document.createElement('i');
-        tickIcon.classList.add('tick-icon','far','fa-check-circle');
+        tickIcon.classList.add('far','fa-check-circle');
 
         let editIcon = document.createElement('i');
-        editIcon.classList.add('edit-icon','far', 'fa-edit');
+        editIcon.classList.add('far', 'fa-edit');
 
         let allIcons = document.createElement('div');
-        allIcons.classList.add('all-icons')
+        allIcons.classList.add('far')
         allIcons.appendChild(crossIcon);
         allIcons.appendChild(tickIcon);
         allIcons.appendChild(editIcon);
@@ -62,7 +72,7 @@ document.querySelector('.todo-items-list').addEventListener(
     event=>{
         let value;
 
-        if (event.target.className==='edit-icon far fa-edit'){
+        if (event.target.className==='far fa-edit'){
             value = event.target.parentElement.parentElement.innerText;
             document.querySelector('.item-textbox').value = value;
             event.target.parentElement.parentElement.remove();
@@ -72,12 +82,13 @@ document.querySelector('.todo-items-list').addEventListener(
             counterUpdate(numOfCompletedItems, numOfIncompleteItems);
         }
 
-        else if (event.target.className==='cross-icon far fa-times-circle'){
+        else if (event.target.className==='far fa-times-circle'){
             event.target.parentElement.parentElement.remove();
 
             //updating counter after delete
-            if(numOfCompletedItems===0)
+            if(numOfCompletedItems===0){
                 numOfIncompleteItems--;
+            }  
             numOfCompletedItems--;
             counterUpdate(numOfCompletedItems, numOfIncompleteItems);
         }
@@ -105,7 +116,7 @@ document.querySelector('.clear-all-button').addEventListener(
     'click',
     ()=>{
         document.querySelector('.todo-items-list').innerHTML='';
-        
+
         //updating counter after clearing
         numOfCompletedItems=0;
         numOfIncompleteItems=0;
