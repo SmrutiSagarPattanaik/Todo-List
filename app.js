@@ -13,6 +13,59 @@ addItemButton.addEventListener('click', todoItemAdd);
 todoList.addEventListener('click', todoItemManipulate);
 //clearing all todo list items event listener
 clearAllButton.addEventListener('click', allItemsClear);
+//loading items from local storage 
+document.addEventListener('DOMContentLoaded',getFromLocalStorage);
+
+//add item to local storage
+function addToLocalStorage(iValue){
+    let items;
+    if(localStorage.getItem('items')===null){
+        items = [];
+    } else {
+        items = JSON.parse(localStorage.getItem('items'));
+    }
+    items.push(iValue);
+    localStorage.setItem('items',JSON.stringify(items));  
+}
+
+//remove item from local storage
+function removeFromLocalStorage(iValue){
+    let items;
+    if(localStorage.getItem('items')===null){
+        return;
+    } else {
+        items = JSON.parse(localStorage.getItem('items'));
+    }
+    items.forEach((element,index)=>{
+        if(element===iValue){
+            items.splice(index,1);
+        }
+    });
+    localStorage.setItem('items',JSON.stringify(items));
+}
+
+//get item from local storage on page loading
+function getFromLocalStorage(){
+    let items;
+    if(localStorage.getItem('items')===null){
+        return;
+    } else {
+        items = JSON.parse(localStorage.getItem('items'));
+    }
+    items.forEach((element)=>{
+        let listNode = todoListNodeCreate(element);
+        document.querySelector('.todo-items-list').appendChild(listNode);
+
+        //updating counter after adding a todo item
+        numOfIncompleteItems++;
+        counterUpdate(numOfCompletedItems, numOfIncompleteItems);
+    });
+}
+
+//clear all items from local storage 
+function clearLocalStorage(){
+    localStorage.clear();
+}
 
 //counter updation function
 function counterUpdate(compCount, incompCount){
@@ -74,7 +127,12 @@ function todoItemAdd(event){
         return;
     }
 
+    //adding to local storage
+    addToLocalStorage(itemValue);
+
+    //creating the list node 
     let listNode = todoListNodeCreate(itemValue);
+
     document.querySelector('.todo-items-list').appendChild(listNode);
     document.querySelector('.item-textbox').value = '';
 
@@ -98,6 +156,9 @@ function todoItemManipulate(event){
     }
 
     else if (event.target.className==='far fa-times-circle'){
+
+        removeFromLocalStorage(event.target.parentElement.previousElementSibling.textContent);
+
         event.target.parentElement.parentElement.remove();
 
         //updating counter after delete
@@ -128,6 +189,8 @@ function todoItemManipulate(event){
 //all todo items clear function
 function allItemsClear(){
     document.querySelector('.todo-items-list').innerHTML='';
+
+    clearLocalStorage();
 
     //updating counter after clearing
     numOfCompletedItems=0;
