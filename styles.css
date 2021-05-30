@@ -11,6 +11,16 @@
     margin: auto;
 }
 
+/* Error message */
+
+.error-message-content {
+    background-color: #f27500e7;
+    font: bold 16px 'Roboto',sans-serif;
+    height: 55px;
+    display: none;
+    justify-content: center;
+}
+
 /* website title */
 
 .website-title-section {
@@ -84,31 +94,34 @@
     font: 20px 'Roboto',sans-serif;
 }
 
-.cross-icon {
+/* fa-times-circle is classname for cross icon */
+.fa-times-circle{
     color:#f20020;
     margin: 0 7px 0 0;
 }
 
-.cross-icon:hover {
+.fa-times-circle:hover {
     cursor: pointer;
     font-weight: bold;
 }
 
-.edit-icon {
+/* fa-edit is the classname for edit icon */
+.fa-edit {
     color: #0a8cf0;
 }
 
-.edit-icon:hover {
+.fa-edit:hover {
     cursor: pointer;
     font-weight: bold;
 }
 
-.tick-icon {
+/* fa-check-circle is the classname for tick icon */
+.fa-check-circle {
     color: #0af00a;
     margin: 0 7px 0 0;
 }
 
-.tick-icon:hover {
+.fa-check-circle:hover {
     cursor: pointer;
     font-weight: bold;
 }
@@ -121,7 +134,7 @@
     text-decoration: line-through;
 }
 
-.all-icons {
+.far {
     font-size: 20px;
 }
 
