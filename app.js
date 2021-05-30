@@ -147,6 +147,7 @@ function todoItemManipulate(event){
 
     if (event.target.className==='far fa-edit'){
         value = event.target.parentElement.parentElement.innerText;
+        removeFromLocalStorage(value);
         document.querySelector('.item-textbox').value = value;
         event.target.parentElement.parentElement.remove();
 
