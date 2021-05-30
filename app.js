@@ -1,7 +1,20 @@
+//variables for updating todo items counter
 let numOfCompletedItems = 0;
 let numOfIncompleteItems = 0;
 
-//counter updation 
+//UI variables to add event listeners
+let addItemButton = document.querySelector('.add-item-button');
+let todoList = document.querySelector('.todo-items-list');
+let clearAllButton = document.querySelector('.clear-all-button');
+
+//todo list item creation event listener
+addItemButton.addEventListener('click', todoItemAdd);
+//todo list item manipulation event listener
+todoList.addEventListener('click', todoItemManipulate);
+//clearing all todo list items event listener
+clearAllButton.addEventListener('click', allItemsClear);
+
+//counter updation function
 function counterUpdate(compCount, incompCount){
     if(incompCount < 0){
         incompCount=0;
@@ -17,109 +30,107 @@ function counterUpdate(compCount, incompCount){
     document.querySelector('.incomplete-items-count').innerHTML = `Number of incomplete items: ${incompCount}`;
 }
 
-//todo list item creation
-document.querySelector('.add-item-button').addEventListener(
-    'click',
-    event=>{
-        event.preventDefault();
-        let itemValue = document.querySelector('.item-textbox').value;
+//todo list node creation function
+function todoListNodeCreate(iValue){
+    let listElement = document.createElement('li');
+    listElement.classList.add('todo-item');
 
-        //Error handling when empty todo value is added
-        if(itemValue===''){
-            document.querySelector('.error-message-content').style.display = 'flex';
-            setTimeout(()=>{
-                document.querySelector('.error-message-content').style.display = 'none';
-            },3000);
-            return;
-        }
+    let textValue = document.createElement('div');
+    textValue.classList.add('text-value');
+    textValue.appendChild(document.createTextNode(`${iValue}`));
 
-        let listElement = document.createElement('li');
-        listElement.classList.add('todo-item');
+    let crossIcon = document.createElement('i');
+    crossIcon.classList.add('far','fa-times-circle');
 
-        let textValue = document.createElement('div');
-        textValue.classList.add('text-value');
-        textValue.appendChild(document.createTextNode(`${itemValue}`));
+    let tickIcon = document.createElement('i');
+    tickIcon.classList.add('far','fa-check-circle');
 
-        let crossIcon = document.createElement('i');
-        crossIcon.classList.add('far','fa-times-circle');
+    let editIcon = document.createElement('i');
+    editIcon.classList.add('far', 'fa-edit');
 
-        let tickIcon = document.createElement('i');
-        tickIcon.classList.add('far','fa-check-circle');
+    let allIcons = document.createElement('div');
+    allIcons.classList.add('far')
+    allIcons.appendChild(crossIcon);
+    allIcons.appendChild(tickIcon);
+    allIcons.appendChild(editIcon);
 
-        let editIcon = document.createElement('i');
-        editIcon.classList.add('far', 'fa-edit');
+    listElement.appendChild(textValue);
+    listElement.appendChild(allIcons);
 
-        let allIcons = document.createElement('div');
-        allIcons.classList.add('far')
-        allIcons.appendChild(crossIcon);
-        allIcons.appendChild(tickIcon);
-        allIcons.appendChild(editIcon);
+    return listElement;
+}
 
-        listElement.appendChild(textValue);
-        listElement.appendChild(allIcons);
+//add todo item function
+function todoItemAdd(event){
+    event.preventDefault();
+    let itemValue = document.querySelector('.item-textbox').value;
 
-        document.querySelector('.todo-items-list').appendChild(listElement);
-        document.querySelector('.item-textbox').value = '';
+    //Error handling when empty todo value is added
+    if(itemValue===''){
+        document.querySelector('.error-message-content').style.display = 'flex';
+        setTimeout(()=>{
+            document.querySelector('.error-message-content').style.display = 'none';
+        },3000);
+        return;
+    }
 
-        numOfIncompleteItems++;
+    let listNode = todoListNodeCreate(itemValue);
+    document.querySelector('.todo-items-list').appendChild(listNode);
+    document.querySelector('.item-textbox').value = '';
+
+    //updating counter after adding a todo item
+    numOfIncompleteItems++;
+    counterUpdate(numOfCompletedItems, numOfIncompleteItems);
+}
+
+//todo item manipulation function
+function todoItemManipulate(event){
+    let value;
+
+    if (event.target.className==='far fa-edit'){
+        value = event.target.parentElement.parentElement.innerText;
+        document.querySelector('.item-textbox').value = value;
+        event.target.parentElement.parentElement.remove();
+
+        //updating counter after edit
+        numOfIncompleteItems--;
         counterUpdate(numOfCompletedItems, numOfIncompleteItems);
     }
-);
 
-//todo list item manipulation
-document.querySelector('.todo-items-list').addEventListener(
-    'click',
-    event=>{
-        let value;
+    else if (event.target.className==='far fa-times-circle'){
+        event.target.parentElement.parentElement.remove();
 
-        if (event.target.className==='far fa-edit'){
-            value = event.target.parentElement.parentElement.innerText;
-            document.querySelector('.item-textbox').value = value;
-            event.target.parentElement.parentElement.remove();
+        //updating counter after delete
+        if(numOfCompletedItems===0){
+            numOfIncompleteItems--;
+        }  
+        numOfCompletedItems--;
+        counterUpdate(numOfCompletedItems, numOfIncompleteItems);
+    }
 
-            //updating counter after edit
+    else {
+        event.target.classList.toggle('tick-icon-color-changer');
+        event.target.parentElement.previousElementSibling.classList.toggle('ontick-text-linethrough');
+
+        //updating counter after completion
+        if(event.target.classList.contains('tick-icon-color-changer')){
+            numOfCompletedItems++;
             numOfIncompleteItems--;
             counterUpdate(numOfCompletedItems, numOfIncompleteItems);
-        }
-
-        else if (event.target.className==='far fa-times-circle'){
-            event.target.parentElement.parentElement.remove();
-
-            //updating counter after delete
-            if(numOfCompletedItems===0){
-                numOfIncompleteItems--;
-            }  
+        } else {
             numOfCompletedItems--;
+            numOfIncompleteItems++;
             counterUpdate(numOfCompletedItems, numOfIncompleteItems);
         }
-
-        else {
-            event.target.classList.toggle('tick-icon-color-changer');
-            event.target.parentElement.previousElementSibling.classList.toggle('ontick-text-linethrough');
-
-            //updating counter after completion
-            if(event.target.classList.contains('tick-icon-color-changer')){
-                numOfCompletedItems++;
-                numOfIncompleteItems--;
-                counterUpdate(numOfCompletedItems, numOfIncompleteItems);
-            } else {
-                numOfCompletedItems--;
-                numOfIncompleteItems++;
-                counterUpdate(numOfCompletedItems, numOfIncompleteItems);
-            }
-        }
     }
-);
+}
 
-//clearing all todo list items
-document.querySelector('.clear-all-button').addEventListener(
-    'click',
-    ()=>{
-        document.querySelector('.todo-items-list').innerHTML='';
+//all todo items clear function
+function allItemsClear(){
+    document.querySelector('.todo-items-list').innerHTML='';
 
-        //updating counter after clearing
-        numOfCompletedItems=0;
-        numOfIncompleteItems=0;
-        counterUpdate(numOfCompletedItems, numOfIncompleteItems);
-    }
-);
+    //updating counter after clearing
+    numOfCompletedItems=0;
+    numOfIncompleteItems=0;
+    counterUpdate(numOfCompletedItems, numOfIncompleteItems);
+}
