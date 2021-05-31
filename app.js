@@ -9,57 +9,90 @@ let clearAllButton = document.querySelector('.clear-all-button');
 
 //todo list item creation event listener
 addItemButton.addEventListener('click', todoItemAdd);
+
 //todo list item manipulation event listener
 todoList.addEventListener('click', todoItemManipulate);
+
 //clearing all todo list items event listener
 clearAllButton.addEventListener('click', allItemsClear);
+
 //loading items from local storage 
 document.addEventListener('DOMContentLoaded',getFromLocalStorage);
 
 //add item to local storage
-function addToLocalStorage(iValue){
+function addToLocalStorage(iValue, isComplete){
     let items;
-    if(localStorage.getItem('items')===null){
+    let listSelect;
+
+    (isComplete===false)? listSelect='incompItems' : listSelect='compItems';
+
+    if(localStorage.getItem(listSelect)===null){
         items = [];
     } else {
-        items = JSON.parse(localStorage.getItem('items'));
+        items = JSON.parse(localStorage.getItem(listSelect));
     }
     items.push(iValue);
-    localStorage.setItem('items',JSON.stringify(items));  
+    localStorage.setItem(listSelect,JSON.stringify(items));  
 }
 
 //remove item from local storage
-function removeFromLocalStorage(iValue){
+function removeFromLocalStorage(iValue, isComplete){
     let items;
-    if(localStorage.getItem('items')===null){
+    let listSelect;
+
+    (isComplete===false)? listSelect='incompItems' : listSelect='compItems';
+
+    if(localStorage.getItem(listSelect)===null){
         return;
     } else {
-        items = JSON.parse(localStorage.getItem('items'));
+        items = JSON.parse(localStorage.getItem(listSelect));
     }
     items.forEach((element,index)=>{
         if(element===iValue){
             items.splice(index,1);
         }
     });
-    localStorage.setItem('items',JSON.stringify(items));
+    localStorage.setItem(listSelect,JSON.stringify(items));
 }
 
 //get item from local storage on page loading
 function getFromLocalStorage(){
-    let items;
-    if(localStorage.getItem('items')===null){
-        return;
-    } else {
-        items = JSON.parse(localStorage.getItem('items'));
-    }
-    items.forEach((element)=>{
-        let listNode = todoListNodeCreate(element);
-        document.querySelector('.todo-items-list').appendChild(listNode);
+    let incompItems;
+    let compItems;
 
-        //updating counter after adding a todo item
-        numOfIncompleteItems++;
-        counterUpdate(numOfCompletedItems, numOfIncompleteItems);
-    });
+    if(localStorage.getItem('incompItems')===null && localStorage.getItem('compItems')===null){
+        return;
+    } else if(localStorage.getItem('incompItems')!==null && localStorage.getItem('compItems')===null) {
+        incompItems = JSON.parse(localStorage.getItem('incompItems'));
+    } else if(localStorage.getItem('incompItems')===null && localStorage.getItem('compItems')!==null) {
+        compItems = JSON.parse(localStorage.getItem('compItems'));
+    } else {
+        incompItems = JSON.parse(localStorage.getItem('incompItems'));
+        compItems = JSON.parse(localStorage.getItem('compItems'));
+    }
+
+    if(incompItems!==undefined){
+        incompItems.forEach((element)=>{
+            let listNode = todoListNodeCreate(element,false);
+            document.querySelector('.todo-items-list').appendChild(listNode);
+    
+            //updating counter
+            numOfIncompleteItems++;
+            counterUpdate(numOfCompletedItems, numOfIncompleteItems);
+        });
+    }
+
+    if(compItems!==undefined){
+        compItems.forEach((element)=>{
+            let listNode = todoListNodeCreate(element,true);
+            document.querySelector('.todo-items-list').appendChild(listNode);
+    
+            //updating counter
+            numOfCompletedItems++;
+            counterUpdate(numOfCompletedItems, numOfIncompleteItems);
+        });
+    }
+
 }
 
 //clear all items from local storage 
@@ -84,28 +117,35 @@ function counterUpdate(compCount, incompCount){
 }
 
 //todo list node creation function
-function todoListNodeCreate(iValue){
+function todoListNodeCreate(iValue, isComplete){
     let listElement = document.createElement('li');
     listElement.classList.add('todo-item');
 
     let textValue = document.createElement('div');
     textValue.classList.add('text-value');
     textValue.appendChild(document.createTextNode(`${iValue}`));
+    if(isComplete===true){
+        textValue.classList.add('ontick-text-linethrough');
+    }
 
     let crossIcon = document.createElement('i');
     crossIcon.classList.add('far','fa-times-circle');
 
     let tickIcon = document.createElement('i');
     tickIcon.classList.add('far','fa-check-circle');
+    if(isComplete===true){
+        tickIcon.classList.add('tick-icon-color-changer');
+    }
 
     let editIcon = document.createElement('i');
     editIcon.classList.add('far', 'fa-edit');
 
     let allIcons = document.createElement('div');
     allIcons.classList.add('far')
-    allIcons.appendChild(crossIcon);
+    
     allIcons.appendChild(tickIcon);
     allIcons.appendChild(editIcon);
+    allIcons.appendChild(crossIcon);
 
     listElement.appendChild(textValue);
     listElement.appendChild(allIcons);
@@ -128,10 +168,10 @@ function todoItemAdd(event){
     }
 
     //adding to local storage
-    addToLocalStorage(itemValue);
+    addToLocalStorage(itemValue,false);
 
     //creating the list node 
-    let listNode = todoListNodeCreate(itemValue);
+    let listNode = todoListNodeCreate(itemValue,false);
 
     document.querySelector('.todo-items-list').appendChild(listNode);
     document.querySelector('.item-textbox').value = '';
@@ -147,19 +187,38 @@ function todoItemManipulate(event){
 
     if (event.target.className==='far fa-edit'){
         value = event.target.parentElement.parentElement.innerText;
-        removeFromLocalStorage(value);
+
+        //handling item removal from local storage based on if it is completed or not
+        let tickIcon = event.target.previousElementSibling;
+        if(tickIcon.classList.contains('tick-icon-color-changer')){
+            removeFromLocalStorage(value,true);
+        }else{
+            removeFromLocalStorage(value,false);
+        }
+
+        //todo item textbox updation in UI
         document.querySelector('.item-textbox').value = value;
+
+        //todo item removal from UI list
         event.target.parentElement.parentElement.remove();
 
         //updating counter after edit
         numOfIncompleteItems--;
+        numOfCompletedItems--;
         counterUpdate(numOfCompletedItems, numOfIncompleteItems);
     }
 
     else if (event.target.className==='far fa-times-circle'){
 
-        removeFromLocalStorage(event.target.parentElement.previousElementSibling.textContent);
+        //handling todo item removal from local storage based on if it is completed or not
+        let tickIcon = event.target.previousElementSibling.previousElementSibling;
+        if(tickIcon.classList.contains('tick-icon-color-changer')){
+            removeFromLocalStorage(event.target.parentElement.previousElementSibling.textContent,true);
+        } else {
+            removeFromLocalStorage(event.target.parentElement.previousElementSibling.textContent,false);
+        }
 
+        //todo item removal from UI list
         event.target.parentElement.parentElement.remove();
 
         //updating counter after delete
@@ -174,12 +233,25 @@ function todoItemManipulate(event){
         event.target.classList.toggle('tick-icon-color-changer');
         event.target.parentElement.previousElementSibling.classList.toggle('ontick-text-linethrough');
 
-        //updating counter after completion
+        let iValue = event.target.parentElement.previousElementSibling.textContent;
+        //updating counter after completion and also updating local storage
         if(event.target.classList.contains('tick-icon-color-changer')){
+
+            //local storage updation
+            removeFromLocalStorage(iValue,false);
+            addToLocalStorage(iValue,true);
+
+            //counter updation
             numOfCompletedItems++;
             numOfIncompleteItems--;
             counterUpdate(numOfCompletedItems, numOfIncompleteItems);
         } else {
+            
+            //local storage updation
+            removeFromLocalStorage(iValue,true);
+            addToLocalStorage(iValue,false);
+
+            //counter updation
             numOfCompletedItems--;
             numOfIncompleteItems++;
             counterUpdate(numOfCompletedItems, numOfIncompleteItems);
